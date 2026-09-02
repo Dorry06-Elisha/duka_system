@@ -21,7 +21,7 @@ type Sale = {
 
 const money = new Intl.NumberFormat("en-KE", {
   style: "currency",
-  currency: "KES",
+  currency: "TZS",
   maximumFractionDigits: 0,
 });
 
@@ -35,45 +35,43 @@ export default function SalesPage() {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
 
-  const loadData = async () => {
-    const token = localStorage.getItem("dukabora_token");
-
-    if (!token) {
-      router.replace("/login");
-      return;
-    }
-
-    try {
-      const [productsResponse, salesResponse] = await Promise.all([
-        fetch("/api/products", { headers: { Authorization: `Bearer ${token}` } }),
-        fetch("/api/sales", { headers: { Authorization: `Bearer ${token}` } }),
-      ]);
-
-      const productsData = await productsResponse.json().catch(() => ({}));
-      const salesData = await salesResponse.json().catch(() => ({}));
-
-      if (!productsResponse.ok) {
-        throw new Error(productsData?.message || "Unable to load products.");
-      }
-
-      if (!salesResponse.ok) {
-        throw new Error(salesData?.message || "Unable to load sales.");
-      }
-
-      setProducts(productsData?.products || []);
-      setSales(salesData?.sales || []);
-      if (productsData?.products?.length) {
-        setProductId(String(productsData.products[0].id));
-      }
-    } catch (loadError) {
-      setError(loadError instanceof Error ? loadError.message : "Unable to load sales data.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    loadData();
+    const fetchSales = async () => {
+      const token = localStorage.getItem("dukabora_token");
+
+      if (!token) {
+        router.replace("/login");
+        return;
+      }
+
+      try {
+        const [productsResponse, salesResponse] = await Promise.all([
+          fetch("/api/products", { headers: { Authorization: `Bearer ${token}` } }),
+          fetch("/api/sales", { headers: { Authorization: `Bearer ${token}` } }),
+        ]);
+        const productsData = await productsResponse.json().catch(() => ({}));
+        const salesData = await salesResponse.json().catch(() => ({}));
+
+        if (!productsResponse.ok) {
+          throw new Error(productsData?.message || "Unable to load products.");
+        }
+        if (!salesResponse.ok) {
+          throw new Error(salesData?.message || "Unable to load sales.");
+        }
+
+        setProducts(productsData?.products || []);
+        setSales(salesData?.sales || []);
+        if (productsData?.products?.length) {
+          setProductId(String(productsData.products[0].id));
+        }
+      } catch (loadError) {
+        setError(loadError instanceof Error ? loadError.message : "Unable to load sales data.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    void fetchSales();
   }, [router]);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -107,7 +105,17 @@ export default function SalesPage() {
       }
 
       setQuantity("1");
-      await loadData();
+      const [productsResponse, salesResponse] = await Promise.all([
+        fetch("/api/products", { headers: { Authorization: `Bearer ${token}` } }),
+        fetch("/api/sales", { headers: { Authorization: `Bearer ${token}` } }),
+      ]);
+      const productsData = await productsResponse.json().catch(() => ({}));
+      const salesData = await salesResponse.json().catch(() => ({}));
+      if (!productsResponse.ok || !salesResponse.ok) {
+        throw new Error(productsData?.message || salesData?.message || "Unable to refresh sales data.");
+      }
+      setProducts(productsData?.products || []);
+      setSales(salesData?.sales || []);
     } catch (submitError) {
       setError(submitError instanceof Error ? submitError.message : "Unable to process sale.");
     } finally {

@@ -13,7 +13,7 @@ type Product = {
 
 const money = new Intl.NumberFormat("en-KE", {
   style: "currency",
-  currency: "KES",
+  currency: "TZS",
   maximumFractionDigits: 0,
 });
 
@@ -30,37 +30,34 @@ export default function ProductsPage() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
 
-  const loadProducts = async () => {
-    const token = localStorage.getItem("dukabora_token");
+  useEffect(() => {
+    const fetchProducts = async () => {
+      const token = localStorage.getItem("dukabora_token");
 
-    if (!token) {
-      router.replace("/login");
-      return;
-    }
-
-    try {
-      const response = await fetch("/api/products", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      const data = await response.json().catch(() => ({}));
-
-      if (!response.ok) {
-        throw new Error(data?.message || "Unable to load products.");
+      if (!token) {
+        router.replace("/login");
+        return;
       }
 
-      setProducts(data?.products || []);
-    } catch (loadError) {
-      setError(loadError instanceof Error ? loadError.message : "Unable to load products.");
-    } finally {
-      setLoading(false);
-    }
-  };
+      try {
+        const response = await fetch("/api/products", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await response.json().catch(() => ({}));
 
-  useEffect(() => {
-    loadProducts();
+        if (!response.ok) {
+          throw new Error(data?.message || "Unable to load products.");
+        }
+
+        setProducts(data?.products || []);
+      } catch (loadError) {
+        setError(loadError instanceof Error ? loadError.message : "Unable to load products.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    void fetchProducts();
   }, [router]);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -97,7 +94,14 @@ export default function ProductsPage() {
       }
 
       setForm({ name: "", selling_price: "", cost_price: "", stock_quantity: "" });
-      await loadProducts();
+      const refreshResponse = await fetch("/api/products", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const refreshData = await refreshResponse.json().catch(() => ({}));
+      if (!refreshResponse.ok) {
+        throw new Error(refreshData?.message || "Unable to refresh products.");
+      }
+      setProducts(refreshData?.products || []);
     } catch (submitError) {
       setError(submitError instanceof Error ? submitError.message : "Unable to add product.");
     } finally {

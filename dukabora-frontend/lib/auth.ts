@@ -33,5 +33,9 @@ export function requireAuth(request: Request) {
     throw new Error("Unauthorized");
   }
 
-  return verifyToken(token);
+  try {
+    return verifyToken(token);
+  } catch {
+    throw new Error("Unauthorized");
+  }
 }

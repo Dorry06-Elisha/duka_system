@@ -26,7 +26,7 @@ export async function POST(request: Request) {
     }
 
     const [rows] = await pool.execute<LoginUserRow[]>(
-      "SELECT id, name, username, password FROM users WHERE username = ? LIMIT 1",
+      "SELECT id, name, username, password FROM dukabora.users WHERE username = ? LIMIT 1",
       [username],
     );
 

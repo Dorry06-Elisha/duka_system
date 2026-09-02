@@ -11,7 +11,8 @@ type DashboardMetrics = {
 
 const currency = new Intl.NumberFormat("en-KE", {
   style: "currency",
-  currency: "KES",
+  currency: "TZS",
+  localeMatcher: "best fit",
   maximumFractionDigits: 0,
 });
 

@@ -13,7 +13,7 @@ const navItems = [
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
-  const isAuthScreen = pathname === "/login";
+  const isAuthScreen = pathname === "/login" || pathname === "/register";
 
   const handleLogout = () => {
     localStorage.removeItem("dukabora_token");

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard" },
@@ -18,6 +19,12 @@ export default function DashboardLayout({
 }>) {
   const pathname = usePathname();
   const router = useRouter();
+
+  useEffect(() => {
+    if (!localStorage.getItem("dukabora_token")) {
+      router.replace("/login");
+    }
+  }, [router]);
 
   const handleLogout = () => {
     localStorage.removeItem("dukabora_token");
