@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import AppShell from "@/components/app-shell";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -17,13 +18,15 @@ export const metadata: Metadata = {
   description: "Dukabora dashboard for inventory, sales, and reporting.",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full bg-slate-100 text-slate-900">{children}</body>
+      <body className="min-h-full bg-slate-100 text-slate-900">
+        <AppShell>{children}</AppShell>
+      </body>
     </html>
   );
 }
