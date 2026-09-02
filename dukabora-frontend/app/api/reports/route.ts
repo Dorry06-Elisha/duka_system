@@ -31,7 +31,7 @@ export async function GET(request: Request) {
       [authUser.userId],
     );
     const [dailyRows] = await db.execute<DailyRevenueRow[]>(
-      `SELECT DATE_FORMAT(s.sale_date, '%Y-%m-%d') AS report_date,
+      `SELECT DATE(s.sale_date) AS report_date,
         COALESCE(SUM(s.total), 0) AS revenue,
         COALESCE(SUM(s.quantity * (s.sale_price - p.cost_price)), 0) AS profit
        FROM sales s

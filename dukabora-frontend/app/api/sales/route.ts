@@ -1,4 +1,4 @@
-import type { RowDataPacket } from "mysql2";
+import type { PoolConnection, ResultSetHeader, RowDataPacket } from "mysql2/promise";
 import { NextResponse } from "next/server";
 import pool from "@/lib/db";
 import { requireAuth } from "@/lib/auth";
@@ -53,6 +53,9 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
+  let connection: PoolConnection | undefined;
+  let transactionStarted = false;
+
   try {
     const authUser = requireAuth(request);
     const body = (await request.json().catch(() => ({}))) as {
@@ -67,57 +70,61 @@ export async function POST(request: Request) {
       return NextResponse.json({ message: "A valid product and quantity are required." }, { status: 400 });
     }
 
-    const [productRows] = await pool.execute<ProductStockRow[]>(
-      "SELECT id, name, selling_price, stock_quantity FROM products WHERE id = ? AND seller_id = ? LIMIT 1",
+    connection = await pool.getConnection();
+    await connection.beginTransaction();
+    transactionStarted = true;
+
+    const [productRows] = await connection.execute<ProductStockRow[]>(
+      "SELECT id, name, selling_price, stock_quantity FROM products WHERE id = ? AND seller_id = ? LIMIT 1 FOR UPDATE",
       [productId, authUser.userId],
     );
 
     const product = productRows[0];
     if (!product) {
+      await connection.rollback();
+      transactionStarted = false;
       return NextResponse.json({ message: "Product not found." }, { status: 404 });
     }
 
     if (product.stock_quantity < quantity) {
+      await connection.rollback();
+      transactionStarted = false;
       return NextResponse.json({ message: "Not enough stock available for this sale." }, { status: 400 });
     }
 
     const salePrice = Number(product.selling_price);
     const total = salePrice * quantity;
 
-    await pool.execute("START TRANSACTION");
+    const [saleResult] = await connection.execute<ResultSetHeader>(
+      "INSERT INTO sales (product_id, quantity, sale_price, total, sold_by, sale_date) VALUES (?, ?, ?, ?, ?, NOW())",
+      [product.id, quantity, salePrice, total, authUser.userId],
+    );
 
-    try {
-      const [saleResult] = await pool.execute(
-        "INSERT INTO sales (product_id, quantity, sale_price, total, sold_by, sale_date) VALUES (?, ?, ?, ?, ?, NOW())",
-        [product.id, quantity, salePrice, total, authUser.userId],
-      );
+    await connection.execute("UPDATE products SET stock_quantity = stock_quantity - ? WHERE id = ?", [quantity, product.id]);
+    await connection.commit();
+    transactionStarted = false;
 
-      await pool.execute("UPDATE products SET stock_quantity = stock_quantity - ? WHERE id = ?", [quantity, product.id]);
-
-      await pool.execute("COMMIT");
-
-      const insertId = typeof saleResult === "object" && saleResult && "insertId" in saleResult ? Number(saleResult.insertId) : 0;
-
-      return NextResponse.json(
-        {
-          sale: {
-            id: insertId,
-            product_id: product.id,
-            product_name: product.name,
-            quantity,
-            sale_price: salePrice,
-            total,
-            sold_by: authUser.userId,
-          },
+    return NextResponse.json(
+      {
+        sale: {
+          id: Number(saleResult.insertId),
+          product_id: product.id,
+          product_name: product.name,
+          quantity,
+          sale_price: salePrice,
+          total,
+          sold_by: authUser.userId,
         },
-        { status: 201 },
-      );
-    } catch (transactionError) {
-      await pool.execute("ROLLBACK");
-      throw transactionError;
-    }
+      },
+      { status: 201 },
+    );
   } catch (error) {
+    if (connection && transactionStarted) {
+      await connection.rollback();
+    }
     const message = error instanceof Error ? error.message : "Unable to create sale.";
     return NextResponse.json({ message }, { status: message === "Unauthorized" ? 401 : 500 });
+  } finally {
+    connection?.release();
   }
 }
