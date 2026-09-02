@@ -96,8 +96,8 @@ export async function POST(request: Request) {
     const total = salePrice * quantity;
 
     const [saleResult] = await connection.execute<ResultSetHeader>(
-      "INSERT INTO sales (product_id, quantity, sale_price, total, sold_by, sale_date) VALUES (?, ?, ?, ?, ?, NOW())",
-      [product.id, quantity, salePrice, total, authUser.userId],
+      "INSERT INTO sales (product_id, user_id, quantity, sale_price, total, sold_by, sale_date) VALUES (?, ?, ?, ?, ?, ?, NOW())",
+      [product.id, authUser.userId, quantity, salePrice, total, authUser.userId],
     );
 
     await connection.execute("UPDATE products SET stock_quantity = stock_quantity - ? WHERE id = ?", [quantity, product.id]);
