@@ -110,27 +110,27 @@ export default function ProductsPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 text-cream">
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-sm font-medium uppercase tracking-[0.2em] text-slate-500">Inventory</p>
-          <h1 className="mt-2 text-3xl font-bold text-slate-900">Products</h1>
+          <p className="text-sm font-medium uppercase tracking-[0.2em] text-slate">Inventory</p>
+          <h1 className="mt-2 text-3xl font-bold text-cream">Products</h1>
         </div>
       </div>
 
       {error ? (
-        <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+        <div className="border border-coral bg-coral/15 px-4 py-3 text-sm text-cream">
           {error}
         </div>
       ) : null}
 
       <div className="grid gap-6 lg:grid-cols-[1.3fr_0.7fr]">
-        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-          <h2 className="text-xl font-semibold text-slate-900">Inventory table</h2>
+        <div className="border border-slate bg-cream p-5 text-navy shadow-lg shadow-black/10">
+          <h2 className="text-xl font-semibold">Inventory table</h2>
 
-          <div className="mt-4 overflow-hidden rounded-xl border border-slate-200">
-            <table className="min-w-full divide-y divide-slate-200 text-left text-sm">
-              <thead className="bg-slate-50 text-slate-600">
+          <div className="mt-4 overflow-hidden border border-slate">
+            <table className="min-w-full divide-y divide-slate text-left text-sm">
+              <thead className="bg-navy text-cream">
                 <tr>
                   <th className="px-4 py-3 font-medium">Name</th>
                   <th className="px-4 py-3 font-medium">Selling</th>
@@ -138,20 +138,20 @@ export default function ProductsPage() {
                   <th className="px-4 py-3 font-medium">Stock</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-200 bg-white">
+              <tbody className="divide-y divide-slate bg-cream">
                 {!loading && products.length === 0 ? (
                   <tr>
-                    <td colSpan={4} className="px-4 py-8 text-center text-slate-500">
+                    <td colSpan={4} className="px-4 py-8 text-center text-slate">
                       No products found.
                     </td>
                   </tr>
                 ) : (
                   products.map((product) => (
-                    <tr key={product.id} className="hover:bg-slate-50">
-                      <td className="px-4 py-3 font-medium text-slate-900">{product.name}</td>
-                      <td className="px-4 py-3 text-slate-700">{money.format(product.selling_price)}</td>
-                      <td className="px-4 py-3 text-slate-700">{money.format(product.cost_price)}</td>
-                      <td className="px-4 py-3 text-slate-700">{product.stock_quantity}</td>
+                    <tr key={product.id} className="hover:bg-slate/10">
+                      <td className="px-4 py-3 font-medium text-navy">{product.name}</td>
+                      <td className="px-4 py-3 text-navy">{money.format(product.selling_price)}</td>
+                      <td className="px-4 py-3 text-navy">{money.format(product.cost_price)}</td>
+                      <td className="px-4 py-3 text-navy">{product.stock_quantity}</td>
                     </tr>
                   ))
                 )}
@@ -162,27 +162,27 @@ export default function ProductsPage() {
 
         <form
           onSubmit={handleSubmit}
-          className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
+          className="border border-slate bg-cream p-5 text-navy shadow-lg shadow-black/10"
         >
-          <h2 className="text-xl font-semibold text-slate-900">Add Product</h2>
+          <h2 className="text-xl font-semibold">Add Product</h2>
 
           <div className="mt-4 space-y-4">
             <div>
-              <label htmlFor="product-name" className="mb-1 block text-sm font-medium text-slate-700">
+              <label htmlFor="product-name" className="mb-1 block text-sm font-medium text-slate">
                 Product name
               </label>
               <input
                 id="product-name"
                 value={form.name}
                 onChange={(event) => setForm((current) => ({ ...current, name: event.target.value }))}
-                className="w-full rounded-xl border border-slate-300 bg-slate-50 px-3 py-2.5 text-slate-900 outline-none transition focus:border-emerald-500 focus:bg-white focus:ring-4 focus:ring-emerald-100"
+                className="w-full border border-slate bg-cream px-3 py-2.5 text-navy outline-none transition focus:border-coral focus:ring-4 focus:ring-coral/20"
                 placeholder="e.g. Rice 5kg"
                 required
               />
             </div>
 
             <div>
-              <label htmlFor="selling-price" className="mb-1 block text-sm font-medium text-slate-700">
+              <label htmlFor="selling-price" className="mb-1 block text-sm font-medium text-slate">
                 Selling price
               </label>
               <input
@@ -192,13 +192,13 @@ export default function ProductsPage() {
                 step="0.01"
                 value={form.selling_price}
                 onChange={(event) => setForm((current) => ({ ...current, selling_price: event.target.value }))}
-                className="w-full rounded-xl border border-slate-300 bg-slate-50 px-3 py-2.5 text-slate-900 outline-none transition focus:border-emerald-500 focus:bg-white focus:ring-4 focus:ring-emerald-100"
+                className="w-full border border-slate bg-cream px-3 py-2.5 text-navy outline-none transition focus:border-coral focus:ring-4 focus:ring-coral/20"
                 required
               />
             </div>
 
             <div>
-              <label htmlFor="cost-price" className="mb-1 block text-sm font-medium text-slate-700">
+              <label htmlFor="cost-price" className="mb-1 block text-sm font-medium text-slate">
                 Cost price
               </label>
               <input
@@ -208,13 +208,13 @@ export default function ProductsPage() {
                 step="0.01"
                 value={form.cost_price}
                 onChange={(event) => setForm((current) => ({ ...current, cost_price: event.target.value }))}
-                className="w-full rounded-xl border border-slate-300 bg-slate-50 px-3 py-2.5 text-slate-900 outline-none transition focus:border-emerald-500 focus:bg-white focus:ring-4 focus:ring-emerald-100"
+                className="w-full border border-slate bg-cream px-3 py-2.5 text-navy outline-none transition focus:border-coral focus:ring-4 focus:ring-coral/20"
                 required
               />
             </div>
 
             <div>
-              <label htmlFor="stock-quantity" className="mb-1 block text-sm font-medium text-slate-700">
+              <label htmlFor="stock-quantity" className="mb-1 block text-sm font-medium text-slate">
                 Stock quantity
               </label>
               <input
@@ -224,7 +224,7 @@ export default function ProductsPage() {
                 step="1"
                 value={form.stock_quantity}
                 onChange={(event) => setForm((current) => ({ ...current, stock_quantity: event.target.value }))}
-                className="w-full rounded-xl border border-slate-300 bg-slate-50 px-3 py-2.5 text-slate-900 outline-none transition focus:border-emerald-500 focus:bg-white focus:ring-4 focus:ring-emerald-100"
+                className="w-full border border-slate bg-cream px-3 py-2.5 text-navy outline-none transition focus:border-coral focus:ring-4 focus:ring-coral/20"
                 required
               />
             </div>
@@ -232,7 +232,7 @@ export default function ProductsPage() {
             <button
               type="submit"
               disabled={submitting}
-              className="w-full rounded-xl bg-emerald-500 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-emerald-500/20 transition hover:bg-emerald-600 disabled:cursor-not-allowed disabled:bg-emerald-300"
+              className="w-full bg-coral px-4 py-3 text-sm font-semibold text-cream transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-60"
             >
               {submitting ? "Adding product..." : "Add Product"}
             </button>

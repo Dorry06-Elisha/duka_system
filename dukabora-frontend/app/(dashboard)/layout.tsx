@@ -32,11 +32,11 @@ export default function DashboardLayout({
   };
 
   return (
-    <div className="min-h-screen bg-slate-100 text-slate-900">
+    <div className="min-h-screen bg-navy text-cream">
       <div className="flex min-h-screen">
-        <aside className="hidden w-72 flex-col border-r border-slate-200 bg-slate-900 text-slate-100 md:flex">
-          <div className="border-b border-slate-800 px-6 py-5">
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-300">
+        <aside className="hidden w-72 flex-col border-r border-slate bg-navy text-cream md:flex">
+          <div className="border-b border-slate px-6 py-5">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-coral">
               Dukabora
             </p>
             <h1 className="mt-2 text-2xl font-bold">Business Hub</h1>
@@ -53,8 +53,8 @@ export default function DashboardLayout({
                   className={[
                     "flex items-center rounded-xl px-4 py-3 text-sm font-medium transition-colors",
                     active
-                      ? "bg-emerald-500 text-white shadow-lg shadow-emerald-500/20"
-                      : "text-slate-200 hover:bg-slate-800 hover:text-white",
+                      ? "bg-coral text-cream shadow-lg shadow-coral/20"
+                      : "text-cream/70 hover:bg-slate/20 hover:text-cream",
                   ].join(" ")}
                 >
                   {item.label}
@@ -65,7 +65,7 @@ export default function DashboardLayout({
             <button
               type="button"
               onClick={handleLogout}
-              className="mt-6 flex w-full items-center justify-center rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-sm font-medium text-slate-200 transition hover:border-rose-500 hover:text-white"
+              className="mt-6 flex w-full items-center justify-center rounded-xl border border-slate bg-transparent px-4 py-3 text-sm font-medium text-cream transition hover:bg-coral hover:text-cream"
             >
               Logout
             </button>
@@ -73,13 +73,13 @@ export default function DashboardLayout({
         </aside>
 
         <div className="flex-1">
-          <header className="border-b border-slate-200 bg-white/90 backdrop-blur-sm">
+          <header className="border-b border-slate bg-navy backdrop-blur-sm">
             <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
               <div>
-                <p className="text-xs font-medium uppercase tracking-[0.2em] text-slate-500">
+                <p className="text-xs font-medium uppercase tracking-[0.2em] text-slate">
                   Inventory & sales
                 </p>
-                <h2 className="mt-1 text-xl font-semibold text-slate-900">
+                <h2 className="mt-1 text-xl font-semibold text-cream">
                   {navItems.find((item) => item.href === pathname)?.label ?? "Overview"}
                 </h2>
               </div>
@@ -87,7 +87,7 @@ export default function DashboardLayout({
               <button
                 type="button"
                 onClick={handleLogout}
-                className="inline-flex items-center rounded-full border border-slate-200 bg-slate-100 px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600"
+                className="inline-flex items-center rounded-full border border-slate bg-transparent px-4 py-2 text-sm font-medium text-cream transition hover:bg-coral hover:text-cream"
               >
                 Logout
               </button>

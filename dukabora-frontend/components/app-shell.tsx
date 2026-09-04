@@ -21,11 +21,11 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <div className="min-h-screen bg-slate-100 text-slate-900">
+    <div className="min-h-screen bg-navy text-cream">
       {!isAuthScreen ? (
-        <header className="border-b border-slate-200 bg-white/80 backdrop-blur-sm">
+        <header className="border-b border-slate bg-navy/95 backdrop-blur-sm">
           <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
-            <Link href="/dashboard" className="text-lg font-bold tracking-tight text-slate-900">
+            <Link href="/dashboard" className="text-lg font-bold tracking-tight text-cream">
               Dukabora
             </Link>
 
@@ -40,8 +40,8 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
                     className={[
                       "rounded-full px-4 py-2 text-sm font-medium transition-colors",
                       isActive
-                        ? "bg-emerald-500 text-white shadow-lg shadow-emerald-500/20"
-                        : "text-slate-600 hover:bg-slate-100 hover:text-slate-900",
+                        ? "bg-coral text-cream shadow-lg shadow-coral/20"
+                        : "text-cream/70 hover:bg-slate/20 hover:text-cream",
                     ].join(" ")}
                   >
                     {item.label}
@@ -53,7 +53,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
             <button
               type="button"
               onClick={handleLogout}
-              className="rounded-full border border-slate-200 bg-slate-100 px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600"
+              className="rounded-full border border-slate bg-transparent px-4 py-2 text-sm font-medium text-cream transition hover:bg-coral hover:text-cream"
             >
               Logout
             </button>

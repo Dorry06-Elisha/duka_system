@@ -9,6 +9,17 @@ type DashboardSummaryRow = RowDataPacket & {
   stockCount: number;
 };
 
+type SalesTrendRow = RowDataPacket & {
+  sale_date: string;
+  total_amount: number | string;
+};
+
+type LowStockRow = RowDataPacket & {
+  id: number;
+  name: string;
+  stock_quantity: number;
+};
+
 export async function GET(request: Request) {
   try {
     const authUser = requireAuth(request);
@@ -24,12 +35,39 @@ export async function GET(request: Request) {
 
     const metrics = summaryRows[0] || { totalSales: 0, totalRevenue: 0, stockCount: 0 };
 
+    const [trendRows] = await pool.execute<SalesTrendRow[]>(
+      `SELECT DATE(sale_date) AS sale_date, COALESCE(SUM(total), 0) AS total_amount
+       FROM sales
+       WHERE sold_by = ? AND sale_date >= CURRENT_DATE - INTERVAL 6 DAY
+       GROUP BY DATE(sale_date)
+       ORDER BY sale_date ASC`,
+      [authUser.userId],
+    );
+
+    const [lowStockRows] = await pool.execute<LowStockRow[]>(
+      `SELECT id, name, stock_quantity
+       FROM products
+       WHERE seller_id = ?
+       ORDER BY stock_quantity ASC, name ASC
+       LIMIT 5`,
+      [authUser.userId],
+    );
+
     return NextResponse.json({
       metrics: {
         totalSales: Number(metrics.totalSales || 0),
         totalRevenue: Number(metrics.totalRevenue || 0),
         stockCount: Number(metrics.stockCount || 0),
       },
+      salesTrend: trendRows.map((row) => ({
+        date: String(row.sale_date).slice(0, 10),
+        total_amount: Number(row.total_amount || 0),
+      })),
+      lowStock: lowStockRows.map((product) => ({
+        id: product.id,
+        name: product.name,
+        stock_quantity: Number(product.stock_quantity || 0),
+      })),
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unauthorized";

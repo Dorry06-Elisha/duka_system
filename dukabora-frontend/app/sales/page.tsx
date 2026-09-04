@@ -127,16 +127,16 @@ export default function SalesPage() {
   const totalValue = selectedProduct ? selectedProduct.selling_price * Number(quantity || 0) : 0;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 text-cream">
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-sm font-medium uppercase tracking-[0.2em] text-slate-500">Transactions</p>
-          <h1 className="mt-2 text-3xl font-bold text-slate-900">Sales</h1>
+          <p className="text-sm font-medium uppercase tracking-[0.2em] text-slate">Transactions</p>
+          <h1 className="mt-2 text-3xl font-bold text-cream">Sales</h1>
         </div>
       </div>
 
       {error ? (
-        <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+        <div className="border border-coral bg-coral/15 px-4 py-3 text-sm text-cream">
           {error}
         </div>
       ) : null}
@@ -144,20 +144,20 @@ export default function SalesPage() {
       <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
         <form
           onSubmit={handleSubmit}
-          className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
+          className="border border-slate bg-cream p-5 text-navy shadow-lg shadow-black/10"
         >
-          <h2 className="text-xl font-semibold text-slate-900">Process new sale</h2>
+          <h2 className="text-xl font-semibold">Process new sale</h2>
 
           <div className="mt-4 space-y-4">
             <div>
-              <label htmlFor="product-select" className="mb-1 block text-sm font-medium text-slate-700">
+              <label htmlFor="product-select" className="mb-1 block text-sm font-medium text-slate">
                 Product
               </label>
               <select
                 id="product-select"
                 value={productId}
                 onChange={(event) => setProductId(event.target.value)}
-                className="w-full rounded-xl border border-slate-300 bg-slate-50 px-3 py-2.5 text-slate-900 outline-none transition focus:border-emerald-500 focus:bg-white focus:ring-4 focus:ring-emerald-100"
+                className="w-full border border-slate bg-cream px-3 py-2.5 text-navy outline-none transition focus:border-coral focus:ring-4 focus:ring-coral/20"
                 disabled={products.length === 0}
                 required
               >
@@ -174,7 +174,7 @@ export default function SalesPage() {
             </div>
 
             <div>
-              <label htmlFor="quantity" className="mb-1 block text-sm font-medium text-slate-700">
+              <label htmlFor="quantity" className="mb-1 block text-sm font-medium text-slate">
                 Quantity
               </label>
               <input
@@ -183,40 +183,40 @@ export default function SalesPage() {
                 min="1"
                 value={quantity}
                 onChange={(event) => setQuantity(event.target.value)}
-                className="w-full rounded-xl border border-slate-300 bg-slate-50 px-3 py-2.5 text-slate-900 outline-none transition focus:border-emerald-500 focus:bg-white focus:ring-4 focus:ring-emerald-100"
+                className="w-full border border-slate bg-cream px-3 py-2.5 text-navy outline-none transition focus:border-coral focus:ring-4 focus:ring-coral/20"
                 required
               />
             </div>
 
-            <div className="rounded-xl bg-slate-50 p-3 text-sm text-slate-600">
+            <div className="bg-navy/5 p-3 text-sm text-slate">
               <div className="flex items-center justify-between">
                 <span>Unit price</span>
-                <span className="font-medium text-slate-900">
+                <span className="font-medium text-navy">
                   {selectedProduct ? money.format(selectedProduct.selling_price) : "-"}
                 </span>
               </div>
               <div className="mt-2 flex items-center justify-between">
                 <span>Total</span>
-                <span className="font-medium text-emerald-700">{money.format(totalValue)}</span>
+                <span className="font-medium text-coral">{money.format(totalValue)}</span>
               </div>
             </div>
 
             <button
               type="submit"
               disabled={submitting || products.length === 0}
-              className="w-full rounded-xl bg-emerald-500 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-emerald-500/20 transition hover:bg-emerald-600 disabled:cursor-not-allowed disabled:bg-emerald-300"
+              className="w-full bg-coral px-4 py-3 text-sm font-semibold text-cream transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-60"
             >
               {submitting ? "Processing sale..." : "Process Sale"}
             </button>
           </div>
         </form>
 
-        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-          <h2 className="text-xl font-semibold text-slate-900">Recent sales</h2>
+        <div className="border border-slate bg-cream p-5 text-navy shadow-lg shadow-black/10">
+          <h2 className="text-xl font-semibold">Recent sales</h2>
 
-          <div className="mt-4 overflow-hidden rounded-xl border border-slate-200">
-            <table className="min-w-full divide-y divide-slate-200 text-left text-sm">
-              <thead className="bg-slate-50 text-slate-600">
+          <div className="mt-4 overflow-hidden border border-slate">
+            <table className="min-w-full divide-y divide-slate text-left text-sm">
+              <thead className="bg-navy text-cream">
                 <tr>
                   <th className="px-4 py-3 font-medium">Product</th>
                   <th className="px-4 py-3 font-medium">Qty</th>
@@ -224,20 +224,20 @@ export default function SalesPage() {
                   <th className="px-4 py-3 font-medium">Date</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-200 bg-white">
+              <tbody className="divide-y divide-slate bg-cream">
                 {!loading && sales.length === 0 ? (
                   <tr>
-                    <td colSpan={4} className="px-4 py-8 text-center text-slate-500">
+                    <td colSpan={4} className="px-4 py-8 text-center text-slate">
                       No sales recorded yet.
                     </td>
                   </tr>
                 ) : (
                   sales.map((sale) => (
-                    <tr key={sale.id} className="hover:bg-slate-50">
-                      <td className="px-4 py-3 text-slate-900">{sale.product_name}</td>
-                      <td className="px-4 py-3 text-slate-700">{sale.quantity}</td>
-                      <td className="px-4 py-3 text-slate-700">{money.format(sale.total)}</td>
-                      <td className="px-4 py-3 text-slate-700">
+                    <tr key={sale.id} className="hover:bg-slate/10">
+                      <td className="px-4 py-3 text-navy">{sale.product_name}</td>
+                      <td className="px-4 py-3 text-navy">{sale.quantity}</td>
+                      <td className="px-4 py-3 text-navy">{money.format(sale.total)}</td>
+                      <td className="px-4 py-3 text-navy">
                         {new Date(sale.sale_date).toLocaleDateString("en-KE")}
                       </td>
                     </tr>

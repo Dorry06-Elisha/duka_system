@@ -31,26 +31,26 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-emerald-50 via-slate-100 to-slate-200 px-4 py-12">
-      <div className="w-full max-w-md overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl shadow-slate-300/50">
-        <div className="bg-slate-900 px-6 py-8 text-white">
-          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-emerald-300">Dukabora</p>
-          <h1 className="mt-3 text-3xl font-bold">Create your account</h1>
-          <p className="mt-2 text-sm text-slate-300">Set up a seller account to manage your store.</p>
+    <div className="flex min-h-screen items-center justify-center bg-navy px-4 py-10">
+      <div className="rise-in w-full max-w-md border border-slate bg-cream p-7 text-navy shadow-2xl sm:p-10">
+        <div>
+          <p className="text-sm font-black uppercase tracking-[0.28em] text-coral">Duka Bora</p>
+          <h1 className="mt-8 text-3xl font-bold">Open your store desk</h1>
+          <p className="mt-2 text-sm text-slate">Create an account to manage inventory and sales.</p>
         </div>
-        <form onSubmit={handleSubmit} className="space-y-5 p-6 sm:p-8">
+        <form onSubmit={handleSubmit} className="mt-8 space-y-5">
           <label className="block text-sm font-medium text-slate-700">Full name
-            <input value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} className="mt-2 w-full rounded-xl border border-slate-300 bg-slate-50 px-4 py-3 text-slate-900" required />
+            <input value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} className="mt-2 w-full border border-slate bg-cream px-4 py-3 text-navy outline-none transition focus:border-coral focus:ring-4 focus:ring-coral/20" required />
           </label>
           <label className="block text-sm font-medium text-slate-700">Username
-            <input value={form.username} onChange={(event) => setForm({ ...form, username: event.target.value })} className="mt-2 w-full rounded-xl border border-slate-300 bg-slate-50 px-4 py-3 text-slate-900" required />
+            <input value={form.username} onChange={(event) => setForm({ ...form, username: event.target.value })} className="mt-2 w-full border border-slate bg-cream px-4 py-3 text-navy outline-none transition focus:border-coral focus:ring-4 focus:ring-coral/20" required />
           </label>
           <label className="block text-sm font-medium text-slate-700">Password
-            <input type="password" minLength={6} value={form.password} onChange={(event) => setForm({ ...form, password: event.target.value })} className="mt-2 w-full rounded-xl border border-slate-300 bg-slate-50 px-4 py-3 text-slate-900" required />
+            <input type="password" minLength={6} value={form.password} onChange={(event) => setForm({ ...form, password: event.target.value })} className="mt-2 w-full border border-slate bg-cream px-4 py-3 text-navy outline-none transition focus:border-coral focus:ring-4 focus:ring-coral/20" required />
           </label>
-          {error ? <div role="alert" className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">{error}</div> : null}
-          <button type="submit" disabled={loading} className="w-full rounded-xl bg-emerald-500 px-4 py-3 text-sm font-semibold text-white disabled:bg-emerald-300">{loading ? "Creating account..." : "Create account"}</button>
-          <p className="text-center text-sm text-slate-600">Already registered? <Link href="/login" className="font-semibold text-emerald-700 hover:underline">Sign in</Link></p>
+          {error ? <div role="alert" className="border border-coral bg-coral/15 px-4 py-3 text-sm text-navy">{error}</div> : null}
+          <button type="submit" disabled={loading} className="w-full bg-coral px-4 py-3 text-sm font-bold text-cream transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-60">{loading ? "Creating account..." : "Create account"}</button>
+          <p className="text-center text-sm text-slate">Already registered? <Link href="/login" className="font-bold text-coral hover:underline">Sign in</Link></p>
         </form>
       </div>
     </div>
