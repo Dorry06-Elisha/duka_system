@@ -38,7 +38,7 @@ export async function GET(request: Request) {
     const [trendRows] = await pool.execute<SalesTrendRow[]>(
       `SELECT DATE(sale_date) AS sale_date, COALESCE(SUM(total), 0) AS total_amount
        FROM sales
-       WHERE sold_by = ? AND sale_date >= CURRENT_DATE - INTERVAL 6 DAY
+       WHERE sold_by = ? AND sale_date >= CURDATE() - INTERVAL 6 DAY
        GROUP BY DATE(sale_date)
        ORDER BY sale_date ASC`,
       [authUser.userId],
@@ -47,7 +47,7 @@ export async function GET(request: Request) {
     const [lowStockRows] = await pool.execute<LowStockRow[]>(
       `SELECT id, name, stock_quantity
        FROM products
-       WHERE seller_id = ?
+       WHERE seller_id = ? AND stock_quantity <= 10
        ORDER BY stock_quantity ASC, name ASC
        LIMIT 5`,
       [authUser.userId],
