@@ -34,7 +34,7 @@ export default function RegisterPage() {
     <div className="flex min-h-screen items-center justify-center bg-navy px-4 py-10">
       <div className="rise-in w-full max-w-md border border-slate bg-cream p-7 text-navy shadow-2xl sm:p-10">
         <div>
-          <p className="text-sm font-black uppercase tracking-[0.28em] text-coral">Duka Bora</p>
+          <p className="text-sm font-black uppercase tracking-[0.28em] text-coral">Smart Duka</p>
           <h1 className="mt-8 text-3xl font-bold">Open your store desk</h1>
           <p className="mt-2 text-sm text-slate">Create an account to manage inventory and sales.</p>
         </div>

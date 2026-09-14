@@ -1,4 +1,4 @@
-# Duka Bora - Next.js Frontend & API Backend
+# Smart Duka - Next.js Retail & Inventory System
 
 A modern web application for managing product inventory, sales, and seller accounts. Built with **Next.js 16**, **React 19**, **TypeScript**, and **MySQL**.
 
@@ -20,6 +20,10 @@ A modern web application for managing product inventory, sales, and seller accou
 - Automatic stock updates
 - Sales history & reporting
 - Profit calculations
+
+✅ **Printable Documents**
+- Download sales reports, receipts, and inventory lists as PDF files
+- Print documents directly with print-friendly layouts
 
 ✅ **Database**
 - MySQL with connection pooling
@@ -63,15 +67,14 @@ cp .env.example .env.local
 ```env
 DB_HOST=localhost
 DB_USER=root
-DB_PASS=your_password
+DB_PASSWORD=your_password
 DB_NAME=dukabora
 JWT_SECRET=your-secret-key
 ```
 
-5. **Initialize database**
-```bash
-mysql -u root -p dukabora < init_db.sql
-```
+5. **Keep the existing database unchanged**
+
+Use the existing `dukabora` database and its current schema. Do not run schema initialization, migrations, renames, or destructive database commands as part of this frontend setup.
 
 6. **Start development server**
 ```bash
@@ -160,10 +163,64 @@ See `init_db.sql` for full schema.
 4. Deploy automatically
 
 ### Self-Hosted
-1. Run `npm run build`
-2. Set up MySQL database
-3. Configure environment variables
-4. Run `npm start`
+The commands below assume Ubuntu, Apache, and an existing `dukabora` database. Run them from `dukabora-frontend`:
+
+```bash
+rm -rf .next
+npm install
+npm run build
+pm2 start npm --name "smart-duka" -- start
+pm2 save
+pm2 startup
+```
+
+Enable Apache proxy modules:
+
+```bash
+sudo a2enmod proxy proxy_http
+sudo systemctl restart apache2
+```
+
+Use this block in `/etc/apache2/sites-available/000-default.conf` inside the default VirtualHost. It forwards port 80 to the Next.js server on port 3000:
+
+```apache
+<VirtualHost *:80>
+  ServerName 10.10.9.201
+
+  ProxyPreserveHost On
+  ProxyPass / http://127.0.0.1:3000/
+  ProxyPassReverse / http://127.0.0.1:3000/
+
+  ErrorLog ${APACHE_LOG_DIR}/smart-duka-error.log
+  CustomLog ${APACHE_LOG_DIR}/smart-duka-access.log combined
+</VirtualHost>
+```
+
+Apply the configuration and verify the process:
+
+```bash
+sudo apache2ctl configtest
+sudo systemctl reload apache2
+pm2 status
+curl http://10.10.9.201
+```
+
+### Local Verification
+
+```bash
+cd dukabora-frontend
+rm -rf .next
+npm install
+npm run dev
+```
+
+Open `http://localhost:3000`. Stop the development server with `Ctrl+C`, then compile and run the production server:
+
+```bash
+rm -rf .next
+npm run build
+npm start
+```
 
 ## Troubleshooting
 

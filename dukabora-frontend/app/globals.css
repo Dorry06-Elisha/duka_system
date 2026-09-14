@@ -32,3 +32,38 @@ body {
 }
 
 .rise-in { animation: rise-in 500ms ease-out both; }
+
+.print-document {
+  background: white;
+  color: #172A39;
+}
+
+@media print {
+  body {
+    background: white;
+    color: #172A39;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  .print-document {
+    display: block !important;
+    border: 0;
+    box-shadow: none;
+    color: #172A39;
+  }
+
+  .print-document table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .print-document th,
+  .print-document td {
+    border-bottom: 1px solid #c9cecc;
+    padding: 8px;
+    text-align: left;
+  }
+}

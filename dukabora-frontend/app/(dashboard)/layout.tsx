@@ -34,10 +34,10 @@ export default function DashboardLayout({
   return (
     <div className="min-h-screen bg-navy text-cream">
       <div className="flex min-h-screen">
-        <aside className="hidden w-72 flex-col border-r border-slate bg-navy text-cream md:flex">
+        <aside className="no-print hidden w-72 flex-col border-r border-slate bg-navy text-cream md:flex">
           <div className="border-b border-slate px-6 py-5">
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-coral">
-              Dukabora
+              Smart Duka
             </p>
             <h1 className="mt-2 text-2xl font-bold">Business Hub</h1>
           </div>
@@ -73,7 +73,7 @@ export default function DashboardLayout({
         </aside>
 
         <div className="flex-1">
-          <header className="border-b border-slate bg-navy backdrop-blur-sm">
+          <header className="no-print border-b border-slate bg-navy backdrop-blur-sm">
             <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
               <div>
                 <p className="text-xs font-medium uppercase tracking-[0.2em] text-slate">

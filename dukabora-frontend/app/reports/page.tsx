@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import PrintableReport from "@/components/PrintableReport";
 
 type ReportData = {
   summary: { revenue: number; cost: number; profit: number; transactions: number };
@@ -69,6 +70,25 @@ export default function ReportsPage() {
           </table>
           {report && report.daily.length === 0 ? <p className="py-6 text-center text-sm text-slate">No sales recorded yet.</p> : null}
         </div>
+      </div>
+
+      <div>
+        <PrintableReport
+          title="Sales Report"
+          fileName="smart-duka-sales-report"
+          columns={[
+            { header: "Date", key: "date" },
+            { header: "Revenue (TSH)", key: "revenue", render: (value) => money.format(Number(value)) },
+            { header: "Profit (TSH)", key: "profit", render: (value) => money.format(Number(value)) },
+          ]}
+          rows={report?.daily || []}
+          totals={summary ? [
+            { label: "Revenue", value: money.format(summary.revenue) },
+            { label: "Cost", value: money.format(summary.cost) },
+            { label: "Profit", value: money.format(summary.profit) },
+            { label: "Transactions", value: summary.transactions },
+          ] : []}
+        />
       </div>
     </div>
   );

@@ -3,8 +3,8 @@ import AppShell from "@/components/app-shell";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Dukabora | Inventory & Sales",
-  description: "Dukabora dashboard for inventory, sales, and reporting.",
+  title: "Smart Duka - Retail & Inventory System",
+  description: "Smart Duka retail management for inventory, sales, receipts, and reporting.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

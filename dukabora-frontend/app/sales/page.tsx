@@ -2,6 +2,7 @@
 
 import { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import PrintableReport from "@/components/PrintableReport";
 
 type Product = {
   id: number;
@@ -247,6 +248,21 @@ export default function SalesPage() {
             </table>
           </div>
         </div>
+      </div>
+
+      <div>
+        <PrintableReport
+          title="Sales Receipt"
+          fileName="smart-duka-sales-receipt"
+          columns={[
+            { header: "Item description", key: "product_name" },
+            { header: "Quantity", key: "quantity" },
+            { header: "Price", key: "sale_price", render: (value) => money.format(Number(value)) },
+            { header: "Total (TSH)", key: "total", render: (value) => money.format(Number(value)) },
+          ]}
+          rows={sales}
+          totals={[{ label: "Sales total", value: money.format(sales.reduce((sum, sale) => sum + Number(sale.total), 0)) }]}
+        />
       </div>
     </div>
   );

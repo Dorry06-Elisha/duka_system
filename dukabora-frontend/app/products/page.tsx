@@ -2,6 +2,7 @@
 
 import { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import PrintableReport from "@/components/PrintableReport";
 
 type Product = {
   id: number;
@@ -238,6 +239,20 @@ export default function ProductsPage() {
             </button>
           </div>
         </form>
+      </div>
+
+      <div>
+        <PrintableReport
+          title="Inventory List"
+          fileName="smart-duka-inventory"
+          columns={[
+            { header: "Item description", key: "name" },
+            { header: "Selling price", key: "selling_price", render: (value) => money.format(Number(value)) },
+            { header: "Cost price", key: "cost_price", render: (value) => money.format(Number(value)) },
+            { header: "Quantity", key: "stock_quantity" },
+          ]}
+          rows={products}
+        />
       </div>
     </div>
   );

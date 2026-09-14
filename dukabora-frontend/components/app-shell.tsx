@@ -23,10 +23,10 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-navy text-cream">
       {!isAuthScreen ? (
-        <header className="border-b border-slate bg-navy/95 backdrop-blur-sm">
+        <header className="no-print border-b border-slate bg-navy/95 backdrop-blur-sm">
           <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
             <Link href="/dashboard" className="text-lg font-bold tracking-tight text-cream">
-              Dukabora
+              Smart Duka
             </Link>
 
             <nav className="hidden items-center gap-2 md:flex">
