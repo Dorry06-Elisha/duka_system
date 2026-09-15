@@ -29,24 +29,28 @@ export default function PrintableReport<T>({
   rows,
   date = new Date().toLocaleDateString("en-TZ"),
   customerName = "Walk-in customer",
-  fileName,
   totals = [],
 }: PrintableReportProps<T>) {
   const reportRef = useRef<HTMLDivElement>(null);
 
-  const downloadPdf = async () => {
+  const handleDownloadPdf = async () => {
     if (!reportRef.current) return;
-    const { default: html2pdf } = await import("html2pdf.js");
-    await html2pdf(reportRef.current)
-      .set({
-        margin: 0.5,
-        filename: `${fileName}.pdf`,
-        image: { type: "jpeg", quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true },
-        jsPDF: { unit: "in", format: "a4", orientation: "portrait" },
-      })
-      .from(reportRef.current)
-      .save();
+
+    try {
+      const html2pdf = (await import("html2pdf.js")).default;
+      await html2pdf(reportRef.current)
+        .set({
+          margin: 0.5,
+          filename: "Sales_Receipt.pdf",
+          image: { type: "jpeg", quality: 0.98 },
+          html2canvas: { scale: 2 },
+          jsPDF: { format: "letter" },
+        })
+        .from(reportRef.current)
+        .save();
+    } catch (error) {
+      console.error("Unable to generate PDF.", error);
+    }
   };
 
   return (
@@ -58,8 +62,8 @@ export default function PrintableReport<T>({
           <p className="mt-1 text-sm text-slate">Date: {date}</p>
           <p className="text-sm text-slate">Customer: {customerName}</p>
         </div>
-        <div className="no-print flex shrink-0 gap-2">
-          <button type="button" onClick={downloadPdf} className="bg-coral px-3 py-2 text-sm font-semibold text-cream hover:brightness-95">Download PDF</button>
+        <div className="no-print print:hidden flex shrink-0 gap-2">
+          <button type="button" onClick={handleDownloadPdf} className="bg-coral px-3 py-2 text-sm font-semibold text-cream hover:brightness-95">Download PDF</button>
           <button type="button" onClick={() => window.print()} className="border border-slate px-3 py-2 text-sm font-semibold text-navy hover:bg-slate/10">Print Directly</button>
         </div>
       </div>
