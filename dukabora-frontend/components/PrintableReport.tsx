@@ -38,14 +38,33 @@ export default function PrintableReport<T>({
 
     try {
       const html2pdf = (await import("html2pdf.js")).default;
+      const opt = {
+        margin: 0.5,
+        filename: "Sales_Receipt.pdf",
+        image: { type: "jpeg" as const, quality: 0.98 },
+        html2canvas: {
+          scale: 2,
+          useCORS: true,
+          onclone: (clonedDoc: Document) => {
+            const elements = clonedDoc.querySelectorAll("*");
+            elements.forEach((element) => {
+              if (!(element instanceof HTMLElement)) return;
+
+              const style = window.getComputedStyle(element);
+              if (style.backgroundColor.includes("okl")) {
+                element.style.backgroundColor = "#ffffff";
+              }
+              if (style.color.includes("okl")) {
+                element.style.color = "#000000";
+              }
+            });
+          },
+        },
+        jsPDF: { unit: "in" as const, format: "letter" as const, orientation: "portrait" as const },
+      };
+
       await html2pdf(reportRef.current)
-        .set({
-          margin: 0.5,
-          filename: "Sales_Receipt.pdf",
-          image: { type: "jpeg", quality: 0.98 },
-          html2canvas: { scale: 2 },
-          jsPDF: { format: "letter" },
-        })
+        .set(opt)
         .from(reportRef.current)
         .save();
     } catch (error) {
