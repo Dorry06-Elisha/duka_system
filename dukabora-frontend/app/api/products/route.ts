@@ -1,4 +1,4 @@
-import type { RowDataPacket } from "mysql2";
+import type { ResultSetHeader, RowDataPacket } from "mysql2";
 import { NextResponse } from "next/server";
 import pool from "@/lib/db";
 import { requireAuth } from "@/lib/auth";
@@ -72,6 +72,72 @@ export async function POST(request: Request) {
     }, { status: 201 });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unable to create product.";
+    return NextResponse.json({ message }, { status: message === "Unauthorized" ? 401 : 500 });
+  }
+}
+
+export async function PUT(request: Request) {
+  try {
+    const authUser = requireAuth(request);
+    const body = (await request.json().catch(() => ({}))) as {
+      id?: number | string;
+      name?: string;
+      selling_price?: number | string;
+      cost_price?: number | string;
+      stock_quantity?: number | string;
+    };
+
+    const productId = Number(body.id ?? 0);
+    const name = body.name?.trim();
+    const sellingPrice = Number(body.selling_price ?? 0);
+    const costPrice = Number(body.cost_price ?? 0);
+    const stockQuantity = Number(body.stock_quantity ?? 0);
+
+    if (!productId || !name || !Number.isFinite(sellingPrice) || !Number.isFinite(costPrice) || !Number.isFinite(stockQuantity)) {
+      return NextResponse.json({ message: "Product name, prices, and stock quantity are required." }, { status: 400 });
+    }
+
+    const [result] = await pool.execute<ResultSetHeader>(
+      `UPDATE products
+       SET name = ?, selling_price = ?, cost_price = ?, stock_quantity = ?
+       WHERE id = ? AND seller_id = ?`,
+      [name, sellingPrice, costPrice, stockQuantity, productId, authUser.userId],
+    );
+
+    if (result.affectedRows === 0) {
+      return NextResponse.json({ message: "Product not found." }, { status: 404 });
+    }
+
+    return NextResponse.json({
+      product: { id: productId, name, selling_price: sellingPrice, cost_price: costPrice, stock_quantity: stockQuantity },
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Unable to update product.";
+    return NextResponse.json({ message }, { status: message === "Unauthorized" ? 401 : 500 });
+  }
+}
+
+export async function DELETE(request: Request) {
+  try {
+    const authUser = requireAuth(request);
+    const productId = Number(new URL(request.url).searchParams.get("id") || 0);
+
+    if (!productId) {
+      return NextResponse.json({ message: "A valid product id is required." }, { status: 400 });
+    }
+
+    const [result] = await pool.execute<ResultSetHeader>(
+      "DELETE FROM products WHERE id = ? AND seller_id = ?",
+      [productId, authUser.userId],
+    );
+
+    if (result.affectedRows === 0) {
+      return NextResponse.json({ message: "Product not found." }, { status: 404 });
+    }
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Unable to delete product.";
     return NextResponse.json({ message }, { status: message === "Unauthorized" ? 401 : 500 });
   }
 }

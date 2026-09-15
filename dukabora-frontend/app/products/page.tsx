@@ -27,9 +27,49 @@ export default function ProductsPage() {
     cost_price: "",
     stock_quantity: "",
   });
+  const [editingProductId, setEditingProductId] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
+
+  const resetForm = () => {
+    setForm({ name: "", selling_price: "", cost_price: "", stock_quantity: "" });
+    setEditingProductId(null);
+  };
+
+  const handleEdit = (product: Product) => {
+    setEditingProductId(product.id);
+    setForm({
+      name: product.name,
+      selling_price: String(product.selling_price),
+      cost_price: String(product.cost_price),
+      stock_quantity: String(product.stock_quantity),
+    });
+    setError("");
+  };
+
+  const handleDelete = async (productId: number) => {
+    if (!window.confirm("Are you sure you want to delete this product?")) return;
+
+    const token = localStorage.getItem("dukabora_token");
+    if (!token) {
+      router.replace("/login");
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/products?id=${productId}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(data?.message || "Unable to delete product.");
+      setProducts((current) => current.filter((product) => product.id !== productId));
+      if (editingProductId === productId) resetForm();
+    } catch (deleteError) {
+      setError(deleteError instanceof Error ? deleteError.message : "Unable to delete product.");
+    }
+  };
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -75,12 +115,13 @@ export default function ProductsPage() {
 
     try {
       const response = await fetch("/api/products", {
-        method: "POST",
+        method: editingProductId ? "PUT" : "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
+          ...(editingProductId ? { id: editingProductId } : {}),
           name: form.name,
           selling_price: Number(form.selling_price),
           cost_price: Number(form.cost_price),
@@ -91,10 +132,10 @@ export default function ProductsPage() {
       const data = await response.json().catch(() => ({}));
 
       if (!response.ok) {
-        throw new Error(data?.message || "Unable to add product.");
+        throw new Error(data?.message || (editingProductId ? "Unable to update product." : "Unable to add product."));
       }
 
-      setForm({ name: "", selling_price: "", cost_price: "", stock_quantity: "" });
+      resetForm();
       const refreshResponse = await fetch("/api/products", {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -137,12 +178,13 @@ export default function ProductsPage() {
                   <th className="px-4 py-3 font-medium">Selling</th>
                   <th className="px-4 py-3 font-medium">Cost</th>
                   <th className="px-4 py-3 font-medium">Stock</th>
+                  <th className="px-4 py-3 font-medium">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate bg-cream">
                 {!loading && products.length === 0 ? (
                   <tr>
-                    <td colSpan={4} className="px-4 py-8 text-center text-slate">
+                    <td colSpan={5} className="px-4 py-8 text-center text-slate">
                       No products found.
                     </td>
                   </tr>
@@ -153,6 +195,10 @@ export default function ProductsPage() {
                       <td className="px-4 py-3 text-navy">{money.format(product.selling_price)}</td>
                       <td className="px-4 py-3 text-navy">{money.format(product.cost_price)}</td>
                       <td className="px-4 py-3 text-navy">{product.stock_quantity}</td>
+                      <td className="whitespace-nowrap px-4 py-3">
+                        <button type="button" onClick={() => handleEdit(product)} className="mr-2 rounded bg-blue-600 px-3 py-1 text-sm text-white hover:bg-blue-700">Edit</button>
+                        <button type="button" onClick={() => void handleDelete(product.id)} className="rounded bg-red-600 px-3 py-1 text-sm text-white hover:bg-red-700">Delete</button>
+                      </td>
                     </tr>
                   ))
                 )}
@@ -165,7 +211,10 @@ export default function ProductsPage() {
           onSubmit={handleSubmit}
           className="border border-slate bg-cream p-5 text-navy shadow-lg shadow-black/10"
         >
-          <h2 className="text-xl font-semibold">Add Product</h2>
+          <div className="flex items-center justify-between gap-3">
+            <h2 className="text-xl font-semibold">{editingProductId ? "Edit Product" : "Add Product"}</h2>
+            {editingProductId ? <button type="button" onClick={resetForm} className="text-sm font-semibold text-coral hover:underline">Cancel</button> : null}
+          </div>
 
           <div className="mt-4 space-y-4">
             <div>
@@ -235,7 +284,7 @@ export default function ProductsPage() {
               disabled={submitting}
               className="w-full bg-coral px-4 py-3 text-sm font-semibold text-cream transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {submitting ? "Adding product..." : "Add Product"}
+              {submitting ? (editingProductId ? "Updating product..." : "Adding product...") : (editingProductId ? "Update Product" : "Add Product")}
             </button>
           </div>
         </form>
