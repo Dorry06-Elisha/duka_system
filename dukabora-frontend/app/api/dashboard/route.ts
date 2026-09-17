@@ -10,7 +10,7 @@ type DashboardSummaryRow = RowDataPacket & {
 };
 
 type SalesTrendRow = RowDataPacket & {
-  sale_date: string;
+  created_at: string;
   total_amount: number | string;
 };
 
@@ -36,11 +36,10 @@ export async function GET(request: Request) {
     const metrics = summaryRows[0] || { totalSales: 0, totalRevenue: 0, stockCount: 0 };
 
     const [trendRows] = await pool.execute<SalesTrendRow[]>(
-      `SELECT DATE(sale_date) AS sale_date, COALESCE(SUM(total), 0) AS total_amount
+      `SELECT sale_date AS created_at, total AS total_amount
        FROM sales
        WHERE sold_by = ? AND sale_date >= CURDATE() - INTERVAL 6 DAY
-       GROUP BY DATE(sale_date)
-       ORDER BY sale_date ASC`,
+       ORDER BY created_at ASC`,
       [authUser.userId],
     );
 
@@ -60,7 +59,7 @@ export async function GET(request: Request) {
         stockCount: Number(metrics.stockCount || 0),
       },
       salesTrend: trendRows.map((row) => ({
-        date: String(row.sale_date).slice(0, 10),
+        created_at: String(row.created_at),
         total_amount: Number(row.total_amount || 0),
       })),
       lowStock: lowStockRows.map((product) => ({

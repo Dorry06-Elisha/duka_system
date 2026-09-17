@@ -12,6 +12,7 @@ type ReportSummaryRow = RowDataPacket & {
 
 type DailyRevenueRow = RowDataPacket & {
   report_date: string;
+  product_names: string;
   revenue: number | string;
   profit: number | string;
 };
@@ -32,6 +33,7 @@ export async function GET(request: Request) {
     );
     const [dailyRows] = await db.execute<DailyRevenueRow[]>(
       `SELECT DATE(s.sale_date) AS report_date,
+        GROUP_CONCAT(DISTINCT p.name ORDER BY p.name SEPARATOR ', ') AS product_names,
         COALESCE(SUM(s.total), 0) AS revenue,
         COALESCE(SUM(s.quantity * (s.sale_price - p.cost_price)), 0) AS profit
        FROM sales s
@@ -53,6 +55,7 @@ export async function GET(request: Request) {
       },
       daily: dailyRows.map((day) => ({
         date: day.report_date,
+        product_names: day.product_names || "-",
         revenue: Number(day.revenue),
         profit: Number(day.profit),
       })),

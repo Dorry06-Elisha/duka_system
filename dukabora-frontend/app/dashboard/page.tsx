@@ -6,18 +6,12 @@ import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YA
 
 type DashboardData = {
   metrics: { totalSales: number; totalRevenue: number; stockCount: number };
-  salesTrend: { date?: string; created_at?: string; total_amount: number }[];
+  salesTrend: { created_at?: string; total_amount: number }[];
   lowStock: { id: number; name: string; stock_quantity: number }[];
 };
 
 const currency = new Intl.NumberFormat("en-KE", { style: "currency", currency: "TZS", maximumFractionDigits: 0 });
 const daysOrder = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-
-const getDayIndex = (dateString: string) => {
-  const date = new Date(dateString);
-  const jsDay = date.getDay();
-  return jsDay === 0 ? 6 : jsDay - 1;
-};
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -47,15 +41,15 @@ export default function DashboardPage() {
 
   const metrics = data?.metrics || { totalSales: 0, totalRevenue: 0, stockCount: 0 };
   const cards = [["Sales this period", `${metrics.totalSales}`, "Transactions"], ["Revenue captured", currency.format(metrics.totalRevenue), "TZS total"], ["Units in stock", `${metrics.stockCount}`, "Across your catalog"]];
-  const trendTotals = Object.fromEntries(daysOrder.map((day) => [day, 0]));
+  const trendTotals: Record<string, number> = Object.fromEntries(daysOrder.map((day) => [day, 0]));
   data?.salesTrend.forEach((sale) => {
-    const rawDate = sale.created_at || sale.date;
+    const rawDate = sale.created_at;
     if (!rawDate) return;
-    const dateString = rawDate.includes("T") ? rawDate : `${rawDate}T00:00:00`;
-    if (Number.isNaN(new Date(dateString).getTime())) return;
-    const dayIndex = getDayIndex(dateString);
-    const day = daysOrder[dayIndex];
-    trendTotals[day] += Number(sale.total_amount || 0);
+    const dateString = rawDate.includes("T") ? rawDate : rawDate.replace(" ", "T");
+    const date = new Date(dateString);
+    if (Number.isNaN(date.getTime())) return;
+    const day = new Intl.DateTimeFormat("en-US", { weekday: "short" }).format(date);
+    if (day in trendTotals) trendTotals[day] += Number(sale.total_amount || 0);
   });
   const trend = daysOrder.map((day) => ({ date: day, total_amount: trendTotals[day] }));
 

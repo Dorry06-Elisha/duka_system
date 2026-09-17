@@ -6,7 +6,7 @@ import PrintableReport from "@/components/PrintableReport";
 
 type ReportData = {
   summary: { revenue: number; cost: number; profit: number; transactions: number };
-  daily: { date: string; revenue: number; profit: number }[];
+  daily: { date: string; product_names: string; revenue: number; profit: number }[];
 };
 
 const money = new Intl.NumberFormat("en-TZ", {
@@ -77,9 +77,10 @@ export default function ReportsPage() {
           title="Sales Report"
           fileName="smart-duka-sales-report"
           columns={[
-            { header: "Date", key: "date" },
-            { header: "Revenue (TSH)", key: "revenue", render: (value) => money.format(Number(value)) },
-            { header: "Profit (TSH)", key: "profit", render: (value) => money.format(Number(value)) },
+            { header: "Date", key: "date", align: "left", render: (value) => new Date(String(value)).toLocaleDateString() },
+            { header: "Product Name", key: "product_names", align: "left" },
+            { header: "Revenue (TSH)", key: "revenue", align: "right", render: (value) => money.format(Number(value)) },
+            { header: "Profit (TSH)", key: "profit", align: "right", render: (value) => money.format(Number(value)) },
           ]}
           rows={report?.daily || []}
           totals={summary ? [
