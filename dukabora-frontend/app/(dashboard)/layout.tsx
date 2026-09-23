@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard" },
@@ -19,6 +19,7 @@ export default function DashboardLayout({
 }>) {
   const pathname = usePathname();
   const router = useRouter();
+  const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     if (!localStorage.getItem("dukabora_token")) {
@@ -33,8 +34,22 @@ export default function DashboardLayout({
 
   return (
     <div className="min-h-screen bg-navy text-cream">
+      <div className="no-print flex items-center justify-between border-b border-slate bg-[#172A39] px-4 py-4 md:hidden">
+        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-coral">Smart Duka</p>
+        <button
+          type="button"
+          aria-label={isOpen ? "Close navigation menu" : "Open navigation menu"}
+          aria-expanded={isOpen}
+          onClick={() => setIsOpen((open) => !open)}
+          className="rounded-lg border border-slate p-2 text-cream transition hover:bg-slate/20"
+        >
+          <svg aria-hidden="true" className="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            {isOpen ? <path d="M6 6l12 12M18 6L6 18" /> : <path d="M4 6h16M4 12h16M4 18h16" />}
+          </svg>
+        </button>
+      </div>
       <div className="flex min-h-screen">
-        <aside className="no-print hidden w-72 flex-col border-r border-slate bg-navy text-cream md:flex">
+        <aside className={`${isOpen ? "block" : "hidden"} no-print w-72 border-r border-slate bg-[#172A39] text-cream md:flex md:flex-col`}>
           <div className="border-b border-slate px-6 py-5">
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-coral">
               Smart Duka
@@ -50,6 +65,7 @@ export default function DashboardLayout({
                 <Link
                   key={item.href}
                   href={item.href}
+                  onClick={() => setIsOpen(false)}
                   className={[
                     "flex items-center rounded-xl px-4 py-3 text-sm font-medium transition-colors",
                     active
@@ -73,7 +89,7 @@ export default function DashboardLayout({
         </aside>
 
         <div className="flex-1">
-          <header className="no-print border-b border-slate bg-navy backdrop-blur-sm">
+          <header className="no-print hidden border-b border-slate bg-navy backdrop-blur-sm md:block">
             <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
               <div>
                 <p className="text-xs font-medium uppercase tracking-[0.2em] text-slate">

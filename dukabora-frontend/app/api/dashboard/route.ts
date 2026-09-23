@@ -10,7 +10,7 @@ type DashboardSummaryRow = RowDataPacket & {
 };
 
 type SalesTrendRow = RowDataPacket & {
-  created_at: string;
+  sale_date: string;
   total_amount: number | string;
 };
 
@@ -36,12 +36,32 @@ export async function GET(request: Request) {
     const metrics = summaryRows[0] || { totalSales: 0, totalRevenue: 0, stockCount: 0 };
 
     const [trendRows] = await pool.execute<SalesTrendRow[]>(
-      `SELECT sale_date AS created_at, total AS total_amount
+      `SELECT DATE_FORMAT(sale_date, '%Y-%m-%d') AS sale_date, COALESCE(SUM(total), 0) AS total_amount
        FROM sales
        WHERE sold_by = ? AND sale_date >= CURDATE() - INTERVAL 6 DAY
-       ORDER BY created_at ASC`,
+       GROUP BY DATE(sale_date)
+       ORDER BY sale_date ASC`,
       [authUser.userId],
     );
+
+    const today = new Date();
+    const trendDates = Array.from({ length: 7 }, (_, index) => {
+      const date = new Date(today.getFullYear(), today.getMonth(), today.getDate() - (6 - index));
+      const dateKey = [
+        date.getFullYear(),
+        String(date.getMonth() + 1).padStart(2, "0"),
+        String(date.getDate()).padStart(2, "0"),
+      ].join("-");
+      const day = new Intl.DateTimeFormat("en-US", { weekday: "short" }).format(date);
+      return { dateKey, day };
+    });
+    const totalsByDate = new Map(
+      trendRows.map((row) => [String(row.sale_date).slice(0, 10), Number(row.total_amount || 0)]),
+    );
+    const trendData = trendDates.map(({ dateKey, day }) => ({
+      day,
+      total: Number(totalsByDate.get(dateKey) || 0),
+    }));
 
     const [lowStockRows] = await pool.execute<LowStockRow[]>(
       `SELECT id, name, stock_quantity
@@ -58,10 +78,7 @@ export async function GET(request: Request) {
         totalRevenue: Number(metrics.totalRevenue || 0),
         stockCount: Number(metrics.stockCount || 0),
       },
-      salesTrend: trendRows.map((row) => ({
-        created_at: String(row.created_at),
-        total_amount: Number(row.total_amount || 0),
-      })),
+      trendData,
       lowStock: lowStockRows.map((product) => ({
         id: product.id,
         name: product.name,
