@@ -46,6 +46,12 @@ const formatNumber = (value: unknown) => {
   return Number.isFinite(number) ? number.toLocaleString("en-TZ") : "-";
 };
 
+const formatDate = (value: unknown) => {
+  if (!value) return "-";
+  const parsedDate = new Date(String(value));
+  return Number.isNaN(parsedDate.getTime()) ? String(value) : parsedDate.toLocaleDateString();
+};
+
 export default function PrintableReport({
   saleData,
   items,
@@ -63,11 +69,18 @@ export default function PrintableReport({
   const activeItems = items || saleData?.items || [];
   const grandTotal = total ?? saleData?.total ?? 0;
   const customerName = customer || saleData?.customer || "Walk-in customer";
-  const reportDate = date || saleData?.date || new Date().toLocaleDateString("en-GB");
+  const reportDate = formatDate(date || saleData?.date || new Date().toISOString());
   const hasTableData = rows.length > 0 || columns.length > 0;
   const normalizedColumns = columns.map((column) =>
     typeof column === "string" ? { header: column, key: column } : column,
   );
+
+  const renderCellValue = (column: PrintableColumn | { header: string; key: string }, row: PrintableRow) => {
+    const value = row?.[column.key];
+    if (isColumnDescriptor(column) && column.render) return column.render(value, row);
+    if (column.key === "date" || column.key === "sale_date") return formatDate(value);
+    return String(value ?? "-");
+  };
 
   const handlePrint = () => {
     if (typeof window !== "undefined") window.print();
@@ -157,9 +170,7 @@ export default function PrintableReport({
                   <tr key={rowIndex} style={{ borderBottom: "1px solid #e5e7eb" }}>
                     {normalizedColumns.map((column) => (
                       <td key={column.key} style={{ padding: "0.75rem", textAlign: column.align || "left" }}>
-                        {isColumnDescriptor(column) && column.render
-                          ? column.render(row?.[column.key], row)
-                          : String(row?.[column.key] ?? "-")}
+                        {renderCellValue(column, row)}
                       </td>
                     ))}
                   </tr>

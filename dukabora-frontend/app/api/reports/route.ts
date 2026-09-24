@@ -40,7 +40,7 @@ export async function GET(request: Request) {
        INNER JOIN products p ON p.id = s.product_id
        WHERE s.sold_by = ?
        GROUP BY DATE(s.sale_date)
-       ORDER BY report_date DESC
+      ORDER BY DATE(s.sale_date) DESC
        LIMIT 30`,
       [authUser.userId],
     );
